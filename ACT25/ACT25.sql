@@ -30,6 +30,15 @@ CREATE OR REPLACE TYPE tab_llibres AS TABLE OF VARCHAR2(30);
 /*Modifica la taula “alumnes” perquè el camp llibres sigui de tipus “tab_llibres”.*/
 ALTER TABLE alumnes MODIFY llibres tab_llibres;
 -- No podemos directamente porque ya hay datos y no son compatibles los tipos
+--Hay dos opciones:
+--Actualizar la tabla quitando col_llibres por tab_llibres manteniendo los inserts
+ALTER TABLE alumne ADD col_llibres tab_llibres NESTED TABLE col_llibres STORE AS t_llibres_alumnes;
+
+UPDATE alumnes SET col_llibres = tab_llibres('llibre1') WHERE id_alumne = 1;
+--faltan mas inserts
+INSERT INTO alumnes VALUES(4,'Teo','Campos','4ESO',null, tab_llibres('libro1','libro2','libro3','libro4','libro5','libro6'));
+--Borrar la tabla y hacer los inserts de nuevo con tab_llibres o...
+
 DROP TABLE alumnes CASCADE CONSTRAINTS PURGE;
 /
 CREATE TABLE alumnes
@@ -43,7 +52,7 @@ CREATE TABLE alumnes
 NESTED TABLE llibres STORE AS t_llibres_alumnes;
 /
 /*Insereix ara el registre de l’alumne amb 6 llibres.*/
-INSERT INTO alumnes VALUES(4,'Teo','Campos','4ESO',tab_llibres('libro1','libro2','libro3','libro4','libro5','libro6'));
+INSERT INTO alumnes VALUES(4,'Teo','Campos','4ESO', tab_llibres('libro1','libro2','libro3','libro4','libro5','libro6'));
 /
 /*Mostra el contingut de la taula alumnes.*/
 SELECT * FROM alumnes;
